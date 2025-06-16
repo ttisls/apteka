@@ -1,0 +1,195 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>Аптеки в Казани</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f5f9f1;
+      color: #2e4d3a;
+    }
+
+    header {
+      background-color: #d8f3dc;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .controls {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin: 20px 0;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 30px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-map {
+      background-color: #a8d0b4;
+      color: #2e4d3a;
+    }
+
+    .btn-map:hover {
+      background-color: #8fb89b;
+    }
+
+    .btn-list {
+      background-color: #c7dca7;
+      color: #2e4d3a;
+    }
+
+    .btn-list:hover {
+      background-color: #aed8a3;
+    }
+
+    #map {
+      width: 100%;
+      height: calc(100vh - 200px);
+      display: block;
+    }
+
+    .list-container {
+      display: none;
+      padding: 20px;
+    }
+
+    .list-item {
+      margin-bottom: 15px;
+      padding: 15px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      background-color: #ffffff;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+  </style>
+
+  <!-- Подключение Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"  />
+</head>
+<body>
+
+  <header>
+    <h1>Аптеки в Казани</h1>
+  </header>
+
+  <!-- Красивые кнопки -->
+  <div class="controls">
+    <button class="btn btn-map" id="showMap">📍 Открыть карту</button>
+    <button class="btn btn-list" id="showList">📄 Показать список</button>
+  </div>
+
+  <!-- Карта -->
+  <div id="map"></div>
+
+  <!-- Список аптек -->
+  <div class="list-container" id="listContainer">
+    <ul style="list-style: none; padding: 0;">
+      <li class="list-item">
+        <strong>Аптека №1</strong><br>
+        Адрес: ул. Баумана, д. 25<br>
+        Рейтинг: ⭐ 4.5
+      </li>
+      <li class="list-item">
+        <strong>Аптека №2</strong><br>
+        Адрес: ул. Пушкина, д. 12<br>
+        Рейтинг: ⭐ 4.2
+      </li>
+      <li class="list-item">
+        <strong>Аптека №3</strong><br>
+        Адрес: ул. Гоголя, д. 5<br>
+        Рейтинг: ⭐ 4.8
+      </li>
+      <li class="list-item">
+        <strong>Аптека №4</strong><br>
+        Адрес: пр. Космонавтов, д. 10<br>
+        Рейтинг: ⭐ 4.7
+      </li>
+      <li class="list-item">
+        <strong>Аптека №5</strong><br>
+        Адрес: ул. Чистопольская, д. 30<br>
+        Рейтинг: ⭐ 4.6
+      </li>
+      <li class="list-item">
+        <strong>Аптека №6</strong><br>
+        Адрес: ул. Татарстан, д. 15<br>
+        Рейтинг: ⭐ 4.3
+      </li>
+      <li class="list-item">
+        <strong>Аптека №7</strong><br>
+        Адрес: ул. Мира, д. 20<br>
+        Рейтинг: ⭐ 4.9
+      </li>
+      <li class="list-item">
+        <strong>Аптека №8</strong><br>
+        Адрес: ул. Ленина, д. 7<br>
+        Рейтинг: ⭐ 4.4
+      </li>
+    </ul>
+  </div>
+
+  <!-- Подключение Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script> 
+
+  <script>
+    // Инициализация карты (Казань)
+    const map = L.map('map').setView([55.7961, 49.1113], 11); // координаты Казани
+
+    // Подключение слоя карты OpenStreetMap
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',  {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Данные о аптеках
+    const pharmacies = [
+      { name: "Аптека №1", lat: 55.796124, lon: 49.118772, rating: 4.5 },
+      { name: "Аптека №2", lat: 55.803364, lon: 49.125554, rating: 4.2 },
+      { name: "Аптека №3", lat: 55.789123, lon: 49.102101, rating: 4.8 },
+      { name: "Аптека №4", lat: 55.798765, lon: 49.115432, rating: 4.7 },
+      { name: "Аптека №5", lat: 55.792345, lon: 49.109876, rating: 4.6 },
+      { name: "Аптека №6", lat: 55.785678, lon: 49.112345, rating: 4.3 },
+      { name: "Аптека №7", lat: 55.794567, lon: 49.117890, rating: 4.9 },
+      { name: "Аптека №8", lat: 55.791234, lon: 49.108765, rating: 4.4 },
+    ];
+
+    // Добавление меток на карту
+    pharmacies.forEach(pharmacy => {
+      L.marker([pharmacy.lat, pharmacy.lon])
+        .addTo(map)
+        .bindPopup(`<strong>${pharmacy.name}</strong><br>Рейтинг: ⭐ ${pharmacy.rating}`);
+    });
+
+    // Функция для показа карты
+    function showMap() {
+      document.getElementById('map').style.display = 'block';
+      document.getElementById('listContainer').style.display = 'none';
+    }
+
+    // Функция для показа списка
+    function showList() {
+      document.getElementById('map').style.display = 'none';
+      document.getElementById('listContainer').style.display = 'block';
+    }
+
+    // Обработчики кнопок
+    document.getElementById('showMap').addEventListener('click', showMap);
+    document.getElementById('showList').addEventListener('click', showList);
+
+    // По умолчанию показываем карту
+    showMap();
+  </script>
+
+</body>
+</html>
